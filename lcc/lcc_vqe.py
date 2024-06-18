@@ -9,7 +9,6 @@ from qiskit.primitives import (
 from qiskit.quantum_info import SparsePauliOp, Pauli
 
 from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.algorithms import MinimumEigenOptimizationResult
 from qiskit_algorithms.optimizers import COBYLA, OptimizerResult
 from qiskit_aer import AerSimulator
 
@@ -18,7 +17,7 @@ class LCCVQE:
     """
     LCC for VQE ansatz with circular entanglement.
     * Only works for one-local (Z) or two-local (ZZ) operations.
-    * Currently only consider the EfficientSU2 ansatz with RY rotation and reps=1.
+    * Currently only consider the TwoLocal ansatz with RY rotation, CZ entanglement, and reps=1.
     """
     def __init__(
         self, 
@@ -39,16 +38,6 @@ class LCCVQE:
         self.optimizer = COBYLA() if optimizer is None else optimizer
 
         self.optimal_params = None
-
-    # def _check_hamiltonian(self, hamiltonian: SparsePauliOp) -> None:
-    #     # TODO: check locality (must be one- or two-local in all terms)
-
-    #     # check type
-    #     if not isinstance(hamiltonian, SparsePauliOp):
-    #         raise TypeError(f'Hamiltonian must be SparsePauliOp, got {type(hamiltonian)} instead.')
-        
-    # def _find_pauli_indices(self) -> Iterator[list[int]]:
-    #     return map(lambda pauli: np.argwhere(pauli.z).reshape(-1).tolist(), self.hamiltonian.paulis)
     
     @staticmethod
     def get_pauli_indices(pauli: Pauli) -> list[int]:
@@ -65,7 +54,7 @@ class LCCVQE:
 
         # Entangling CNOT
         for k in range(num_qubits - 1):
-            qc.cx(k, k + 1)
+            qc.cz(k, k + 1)
 
         # Second layer RY
         for k in range(num_qubits):
@@ -130,10 +119,6 @@ class LCCVQE:
             
         return pubs
     
-    @staticmethod
-    def pubs_to_v1(pubs) -> list:
-        return list(zip(*pubs))
-    
     def compute_energy(self, params: list[float] | np.ndarray) -> float:
         """
         Computes the sum of expectation of the ZZ terms.
@@ -141,13 +126,6 @@ class LCCVQE:
         pubs = self.generate_pubs(params)
         results = self.estimator.run(pubs).result()
         evs = [result.data.evs for result in results]
-        return sum(evs)
-    
-    def compute_energy_v1(self, params: list[float] | np.ndarray) -> float:
-        pubs = self.generate_pubs(params)
-        v1_args = self.pubs_to_v1(pubs)
-        result = self.estimator.run(*v1_args).result()
-        evs = [ev for ev in result.values]
         return sum(evs)
 
     def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
