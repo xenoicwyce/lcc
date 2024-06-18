@@ -1,7 +1,5 @@
 import numpy as np
 
-from typing import Iterator
-
 from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
 from qiskit.primitives import (
@@ -39,6 +37,8 @@ class LCCVQE:
         self.sampler = BackendSampler(backend=backend) if sampler is None else sampler
         self.estimator = BackendEstimator(backend=backend) if estimator is None else estimator
         self.optimizer = COBYLA() if optimizer is None else optimizer
+
+        self.optimal_params = None
 
     # def _check_hamiltonian(self, hamiltonian: SparsePauliOp) -> None:
     #     # TODO: check locality (must be one- or two-local in all terms)
@@ -101,47 +101,23 @@ class LCCVQE:
                     # 4-qubit
                     qc = self.generate_local_ansatz(4)
                     local_ob = SparsePauliOp('IZZI', observable.coeffs[0])
-                    first_layer = np.array([
-                        (i - 1) % self.num_qubits,
-                        i,
-                        j,
-                        (j + 1) % self.num_qubits,
-                    ])
-                
+                    first_layer = np.array([i - 1, i, j, j + 1]) % self.num_qubits
+
                 elif self._distance(i, j) == 2:
                     # 5-qubit
                     qc = self.generate_local_ansatz(5)
                     local_ob = SparsePauliOp('IZIZI', observable.coeffs[0])
 
                     if i + 2 == j:
-                        first_layer = np.array([
-                            (i - 1) % self.num_qubits,
-                            i,
-                            (i + 1) % self.num_qubits,
-                            j,
-                            (j + 1) % self.num_qubits,
-                        ])
+                        first_layer = np.array([i - 1, i, i + 1, j, j + 1]) % self.num_qubits
                     else:
-                        first_layer = np.array([
-                            (j - 1) % self.num_qubits,
-                            j,                            
-                            (i - 1) % self.num_qubits,
-                            i,
-                            (i + 1) % self.num_qubits,                            
-                        ])
+                        first_layer = np.array([j - 1, j, i - 1, i, i + 1]) % self.num_qubits
 
                 elif self._distance(i, j) > 2:
                     # 6-qubit
                     qc = self.generate_local_ansatz(6)
                     local_ob = SparsePauliOp('IZIIZI', observable.coeffs[0])
-                    first_layer = np.array([
-                        (i - 1) % self.num_qubits,
-                        i, 
-                        (i + 1) % self.num_qubits,
-                        (j - 1) % self.num_qubits,
-                        j,
-                        (j + 1) % self.num_qubits,
-                    ])
+                    first_layer = np.array([i - 1, i, i + 1, j - 1, j, j + 1]) % self.num_qubits
             else:
                 raise ValueError(f'Pauli indices must be of 1 or 2 length. Got {len(pauli_indices)} instead.')
             
@@ -154,6 +130,10 @@ class LCCVQE:
             
         return pubs
     
+    @staticmethod
+    def pubs_to_v1(pubs) -> list:
+        return list(zip(*pubs))
+    
     def compute_energy(self, params: list[float] | np.ndarray) -> float:
         """
         Computes the sum of expectation of the ZZ terms.
@@ -161,6 +141,13 @@ class LCCVQE:
         pubs = self.generate_pubs(params)
         results = self.estimator.run(pubs).result()
         evs = [result.data.evs for result in results]
+        return sum(evs)
+    
+    def compute_energy_v1(self, params: list[float] | np.ndarray) -> float:
+        pubs = self.generate_pubs(params)
+        v1_args = self.pubs_to_v1(pubs)
+        result = self.estimator.run(*v1_args).result()
+        evs = [ev for ev in result.values]
         return sum(evs)
 
     def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
@@ -176,4 +163,6 @@ class LCCVQE:
             return self.compute_energy(params)
 
         result = self.optimizer.minimize(obj_func, initial_point)
+        self.optimal_params = result.x
+
         return result
