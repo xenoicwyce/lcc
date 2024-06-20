@@ -22,11 +22,11 @@ class LCCVQE:
     * Currently only consider the TwoLocal ansatz with RY rotation, CZ entanglement, and reps=1.
     """
     def __init__(
-        self, 
+        self,
         quadratic_program: QuadraticProgram,
-        sampler=None, 
+        sampler=None,
         estimator=None,
-        optimizer=None
+        optimizer=None,
     ) -> None:
         hamiltonian, offset = quadratic_program.to_ising()
         self.hamiltonian: SparsePauliOp = hamiltonian
@@ -34,7 +34,7 @@ class LCCVQE:
 
         self.num_qubits = hamiltonian.num_qubits
 
-        backend = AerSimulator(method='statevector')        
+        backend = AerSimulator(method='statevector')
         self.sampler = BackendSampler(backend=backend) if sampler is None else sampler
         self.estimator = BackendEstimator(backend=backend) if estimator is None else estimator
         self.optimizer = COBYLA() if optimizer is None else optimizer
