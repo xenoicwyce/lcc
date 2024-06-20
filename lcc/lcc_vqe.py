@@ -5,6 +5,8 @@ from qiskit.circuit import ParameterVector
 from qiskit.primitives import (
     BackendSamplerV2 as BackendSampler,
     BackendEstimatorV2 as BackendEstimator,
+    SamplerResult,
+    EstimatorResult,
 )
 from qiskit.quantum_info import SparsePauliOp, Pauli
 
@@ -127,6 +129,19 @@ class LCCVQE:
         results = self.estimator.run(pubs).result()
         evs = [result.data.evs for result in results]
         return sum(evs)
+    
+    def run_sampler(self, params: list[float] | np.ndarray) -> SamplerResult:
+        """
+        Run the circuit with sampler to get quasi-probability distribution.
+        """
+        pubs = self.generate_pubs(params)
+
+        sampler_pubs = []
+        for qc, _, local_params in pubs:
+            sampler_pubs.append((qc, local_params))
+
+        results = self.sampler.run(sampler_pubs).result()
+        return results
 
     def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
         """
