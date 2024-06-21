@@ -1,0 +1,101 @@
+Instance,Solution status (CPLEX),Solution values (CPLEX),Objective value (CPLEX)
+data_0,integer optimal solution,"[0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",20.0
+data_1,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",25.0
+data_10,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",9.0
+data_11,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",32.0
+data_12,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]",14.0
+data_13,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",15.0
+data_14,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",15.0
+data_15,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",18.0
+data_16,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",14.0
+data_17,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",12.0
+data_18,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, -0.0, 0.0, 0.0, 1.0]",12.0
+data_19,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0]",19.0
+data_2,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0]",15.0
+data_20,integer optimal solution,"[-0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",20.0
+data_21,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",33.0
+data_22,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0]",20.0
+data_23,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",12.0
+data_24,integer optimal solution,"[0.0, 0.0, 0.0, -0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",24.0
+data_25,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",13.0
+data_26,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",8.0
+data_27,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",18.0
+data_28,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0]",38.0
+data_29,integer optimal solution,"[0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",20.0
+data_3,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, 0.0, 0.0, 0.0]",15.0
+data_30,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",28.0
+data_31,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",22.0
+data_32,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",14.0
+data_33,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",23.0
+data_34,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",19.0
+data_35,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",14.0
+data_36,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",17.0
+data_37,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]",29.0
+data_38,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -0.0]",11.0
+data_39,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]",13.0
+data_4,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]",20.0
+data_40,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",12.0
+data_41,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",19.0
+data_42,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",14.0
+data_43,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]",24.0
+data_44,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]",8.0
+data_45,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",28.0
+data_46,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]",23.0
+data_47,integer optimal solution,"[0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, -0.0, 0.0]",20.0
+data_48,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",17.0
+data_49,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",25.0
+data_5,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",19.0
+data_50,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]",22.0
+data_51,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",12.0
+data_52,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]",24.0
+data_53,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",28.0
+data_54,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",17.0
+data_55,integer optimal solution,"[0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",14.0
+data_56,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",20.0
+data_57,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]",8.0
+data_58,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",18.0
+data_59,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",22.0
+data_6,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]",17.0
+data_60,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",30.0
+data_61,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",18.0
+data_62,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",23.0
+data_63,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]",22.0
+data_64,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",12.0
+data_65,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",13.0
+data_66,integer optimal solution,"[0.0, -0.0, 0.0, 0.0, -0.0, 1.0, 1.0, -0.0, 0.0, 0.0, 1.0, 0.0]",12.0
+data_67,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]",18.0
+data_68,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",24.0
+data_69,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",21.0
+data_7,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",19.0
+data_70,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0]",21.0
+data_71,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0]",25.0
+data_72,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",16.0
+data_73,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0]",30.0
+data_74,integer optimal solution,"[0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0]",24.0
+data_75,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -0.0, 1.0]",12.0
+data_76,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",17.0
+data_77,integer optimal solution,"[0.0, 0.0, -0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",9.0
+data_78,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",23.0
+data_79,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",24.0
+data_8,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]",19.0
+data_80,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",10.0
+data_81,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]",8.0
+data_82,integer optimal solution,"[1.0, 0.0, -0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]",26.0
+data_83,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]",20.0
+data_84,integer optimal solution,"[0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",10.0
+data_85,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",14.0
+data_86,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0]",11.0
+data_87,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.0]",7.0
+data_88,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",16.0
+data_89,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]",13.0
+data_9,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",15.0
+data_90,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",16.0
+data_91,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]",13.0
+data_92,integer optimal solution,"[0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]",27.0
+data_93,integer optimal solution,"[0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",13.0
+data_94,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, -0.0, 1.0, 0.0, 0.0]",19.0
+data_95,integer optimal solution,"[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]",21.0
+data_96,integer optimal solution,"[1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]",14.0
+data_97,integer optimal solution,"[0.0, 0.0, 1.0, 1.0, 0.0, 0.0, -0.0, 1.0, 0.0]",14.0
+data_98,integer optimal solution,"[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",22.0
+data_99,integer optimal solution,"[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]",17.0

@@ -1,0 +1,19 @@
+{
+    "num_bins": 3,
+    "num_items": 3,
+    "weights": [
+        3,
+        3,
+        1
+    ],
+    "values": [
+        5,
+        10,
+        9
+    ],
+    "capacities": [
+        2,
+        3,
+        2
+    ]
+}
