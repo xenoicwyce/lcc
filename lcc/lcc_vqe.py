@@ -6,11 +6,11 @@ from qiskit.primitives import (
     BackendSamplerV2 as BackendSampler,
     BackendEstimatorV2 as BackendEstimator,
     SamplerResult,
-    EstimatorResult,
 )
 from qiskit.quantum_info import SparsePauliOp, Pauli
 
 from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.converters import QuadraticProgramToQubo
 from qiskit_algorithms.optimizers import COBYLA, OptimizerResult
 from qiskit_aer import AerSimulator
 
@@ -28,15 +28,21 @@ class LCCVQE:
         estimator=None,
         optimizer=None,
     ) -> None:
-        hamiltonian, offset = quadratic_program.to_ising()
+        self.qp = quadratic_program
+        converter = QuadraticProgramToQubo()
+        qubo = converter.convert(quadratic_program)
+        self.qubo = qubo
+
+        hamiltonian, offset = qubo.to_ising()
         self.hamiltonian: SparsePauliOp = hamiltonian
         self.offset: float = offset
 
         self.num_qubits = hamiltonian.num_qubits
 
-        backend = AerSimulator(method='statevector')
-        self.sampler = BackendSampler(backend=backend) if sampler is None else sampler
-        self.estimator = BackendEstimator(backend=backend) if estimator is None else estimator
+        backend_sv = AerSimulator(method='statevector')
+        backend_mps = AerSimulator(method='matrix_product_state')
+        self.sampler = BackendSampler(backend=backend_mps) if sampler is None else sampler
+        self.estimator = BackendEstimator(backend=backend_sv) if estimator is None else estimator
         self.optimizer = COBYLA() if optimizer is None else optimizer
 
         self.optimal_params = None
@@ -59,6 +65,22 @@ class LCCVQE:
             qc.cz(k, k + 1)
 
         # Second layer RY
+        for k in range(num_qubits):
+            qc.ry(theta[num_qubits + k], k)
+
+        return qc
+    
+    @staticmethod
+    def full_twolocal_ansatz(num_qubits: int) -> QuantumCircuit:
+        qc = QuantumCircuit(num_qubits)
+        theta = ParameterVector('θ', 2 * num_qubits)
+        
+        for k in range(num_qubits):
+            qc.ry(theta[k], k)
+
+        for k in range(num_qubits):
+            qc.cz(k, (k + 1) % num_qubits)
+
         for k in range(num_qubits):
             qc.ry(theta[num_qubits + k], k)
 
@@ -130,18 +152,18 @@ class LCCVQE:
         evs = [result.data.evs for result in results]
         return sum(evs)
     
-    def run_sampler(self, params: list[float] | np.ndarray) -> SamplerResult:
+    def sample_most_likely(self, params: list[float] | np.ndarray) -> list[int]:
         """
-        Run the circuit with sampler to get quasi-probability distribution.
+        Run the full circuit with sampler to get the solution.
         """
-        pubs = self.generate_pubs(params)
+        ansatz = self.full_twolocal_ansatz(self.num_qubits)        
+        result = self.sampler.run([(ansatz, params)]).result()[0]
+        counts = result.data.meas.get_counts()
 
-        sampler_pubs = []
-        for qc, _, local_params in pubs:
-            sampler_pubs.append((qc, local_params))
-
-        results = self.sampler.run(sampler_pubs).result()
-        return results
+        highest_count = max(counts.values())
+        for bit_string, count in counts.items():
+            if count == highest_count:
+                return list(map(int, bit_string))
 
     def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
         """
