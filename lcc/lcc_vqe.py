@@ -181,3 +181,12 @@ class LCCVQE:
         self.optimal_params = result.x
 
         return result
+
+    def solve_gurobi(self) -> None:
+        from qiskit_optimization.algorithms import GurobiOptimizer
+        from lcc.lp import construct_qiskit_quadratic_program
+
+        qp = construct_qiskit_quadratic_program(self.params)
+
+        grb_result = GurobiOptimizer().solve(qp)
+        self.true_obj = int(grb_result.fval)
