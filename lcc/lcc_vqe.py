@@ -11,6 +11,7 @@ from qiskit.quantum_info import SparsePauliOp, Pauli
 
 from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.converters import QuadraticProgramToQubo
+from qiskit_optimization.algorithms import GurobiOptimizer
 from qiskit_algorithms.optimizers import COBYLA, OptimizerResult
 from qiskit_aer import AerSimulator
 
@@ -182,11 +183,6 @@ class LCCVQE:
 
         return result
 
-    def solve_gurobi(self) -> None:
-        from qiskit_optimization.algorithms import GurobiOptimizer
-        from lcc.lp import construct_qiskit_quadratic_program
-
-        qp = construct_qiskit_quadratic_program(self.params)
-
-        grb_result = GurobiOptimizer().solve(qp)
-        self.true_obj = int(grb_result.fval)
+    def solve_gurobi(self) -> float:
+        result = GurobiOptimizer().solve(self.qp)
+        return result.fval
