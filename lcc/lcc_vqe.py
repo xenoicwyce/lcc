@@ -15,6 +15,8 @@ from qiskit_optimization.algorithms import GurobiOptimizer
 from qiskit_algorithms.optimizers import COBYLA, OptimizerResult
 from qiskit_aer import AerSimulator
 
+TWO_PI = 2 * np.pi
+
 
 class LCCVQE:
     """
@@ -87,6 +89,9 @@ class LCCVQE:
 
         return qc
     
+    def generate_random_params(self, scale=TWO_PI):
+        return np.random.rand(2 * self.num_qubits) * scale
+    
     def _distance(self, i, j):
         return min(abs(i - j), abs(i + self.num_qubits - j), abs(j - i + self.num_qubits))
 
@@ -103,11 +108,8 @@ class LCCVQE:
                 qc = self.generate_local_ansatz(3)
                 local_ob = SparsePauliOp('IZI', observable.coeffs[0])
                 i = pauli_indices[0]
-                first_layer = np.array([
-                    (i - 1) % self.num_qubits,
-                    i,
-                    (i + 1) % self.num_qubits,
-                ])
+                first_layer = np.array([(i - 1), i, (i + 1)]) % self.num_qubits
+
             elif len(pauli_indices) == 2:
                 # two-local
                 i, j = pauli_indices
