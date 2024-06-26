@@ -171,7 +171,7 @@ class LCCVQE:
         highest_count = max(counts.values())
         for bit_string, count in counts.items():
             if count == highest_count:
-                return list(map(int, bit_string))
+                return list(map(int, bit_string[::-1])) # flip the bit-string due to qiskit ordering
 
     def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
         """
