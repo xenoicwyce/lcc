@@ -96,8 +96,8 @@ class LCCVQE:
         return min(abs(i - j), abs(i + self.num_qubits - j), abs(j - i + self.num_qubits))
 
     def generate_pubs(
-            self, 
-            params: list[float] | np.ndarray,
+        self, 
+        params: list[float] | np.ndarray,
     ) -> list[tuple[QuantumCircuit, SparsePauliOp, np.ndarray]]:
         pubs = []
 
@@ -155,12 +155,17 @@ class LCCVQE:
         evs = [result.data.evs for result in results]
         return sum(evs)
     
-    def sample_most_likely(self, params: list[float] | np.ndarray) -> list[int]:
+    def sample_most_likely(
+        self,
+        params: list[float] | np.ndarray,
+        shots: int = None,
+    ) -> list[int]:
         """
         Run the full circuit with sampler to get the solution.
         """
-        ansatz = self.full_twolocal_ansatz(self.num_qubits)        
-        result = self.sampler.run([(ansatz, params)]).result()[0]
+        ansatz = self.full_twolocal_ansatz(self.num_qubits)
+        ansatz.measure_all()
+        result = self.sampler.run([(ansatz, params)], shots=shots).result()[0]
         counts = result.data.meas.get_counts()
 
         highest_count = max(counts.values())
