@@ -27,16 +27,16 @@ class LCCVQE:
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
+        shots: int = None,
         sampler=None,
         estimator=None,
-        optimizer=None,
+        optimizer=None,        
     ) -> None:
         self.qp = quadratic_program
-        converter = QuadraticProgramToQubo()
-        qubo = converter.convert(quadratic_program)
-        self.qubo = qubo
+        self.converter = QuadraticProgramToQubo()
+        self.qubo = self.converter.convert(self.qp)
 
-        hamiltonian, offset = qubo.to_ising()
+        hamiltonian, offset = self.qubo.to_ising()
         self.hamiltonian: SparsePauliOp = hamiltonian
         self.offset: float = offset
 
@@ -47,8 +47,10 @@ class LCCVQE:
         self.sampler = BackendSampler(backend=backend_mps) if sampler is None else sampler
         self.estimator = BackendEstimator(backend=backend_sv) if estimator is None else estimator
         self.optimizer = COBYLA() if optimizer is None else optimizer
+        self.shots = shots
 
         self.optimal_params = None
+        self.optimal_solution = None
     
     @staticmethod
     def get_pauli_indices(pauli: Pauli) -> list[int]:
@@ -155,25 +157,35 @@ class LCCVQE:
         evs = [result.data.evs for result in results]
         return sum(evs)
     
-    def sample_most_likely(
-        self,
-        params: list[float] | np.ndarray,
-        shots: int = None,
-    ) -> list[int]:
+    def _sample_optimal_circuit(self) -> dict[str, int]:
         """
-        Run the full circuit with sampler to get the solution.
+        Run the full circuit with sampler to get the solution. 
         """
+        if self.optimal_params is None:
+            raise ValueError('Problem not yet solved. Run LCCVQE.solve() to solve the problem.')
+        
         ansatz = self.full_twolocal_ansatz(self.num_qubits)
         ansatz.measure_all()
-        result = self.sampler.run([(ansatz, params)], shots=shots).result()[0]
-        counts = result.data.meas.get_counts()
+        result = self.sampler.run([(ansatz, self.optimal_params)], shots=self.shots).result()[0]
+        return result.data.meas.get_counts()
 
+    def _sample_most_likely(self) -> list[int]:
+        counts = self._sample_optimal_circuit()
         highest_count = max(counts.values())
+
         for bit_string, count in counts.items():
             if count == highest_count:
                 return list(map(int, bit_string[::-1])) # flip the bit-string due to qiskit ordering
+            
+    def get_qp_solution(self) -> list[float]:
+        qubo_solution = self._sample_most_likely()
+        return self.converter.interpret(qubo_solution)
 
-    def solve(self, initial_point: list[float] | np.ndarray = None) -> OptimizerResult:
+    def solve(
+        self, 
+        initial_point: list[float] | np.ndarray = None,
+        run_sampler: bool = False,
+    ) -> OptimizerResult:
         """
         Calls the Scipy minimize function and returns the OptimizerResult object.
         """
@@ -187,6 +199,9 @@ class LCCVQE:
 
         result = self.optimizer.minimize(obj_func, initial_point)
         self.optimal_params = result.x
+
+        if run_sampler:
+            self.optimal_solution = self.get_qp_solution()
 
         return result
 
