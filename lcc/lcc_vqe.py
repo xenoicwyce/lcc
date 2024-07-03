@@ -5,7 +5,6 @@ from qiskit.circuit import ParameterVector
 from qiskit.primitives import (
     BackendSamplerV2 as BackendSampler,
     BackendEstimatorV2 as BackendEstimator,
-    SamplerResult,
 )
 from qiskit.quantum_info import SparsePauliOp, Pauli
 
@@ -18,7 +17,7 @@ from qiskit_aer import AerSimulator
 TWO_PI = 2 * np.pi
 
 
-class LCCVQE:
+class FullVQE:
     """
     LCC for VQE ansatz with circular entanglement.
     * Only works for one-local (Z) or two-local (ZZ) operations.
@@ -41,6 +40,7 @@ class LCCVQE:
         self.offset: float = offset
 
         self.num_qubits = hamiltonian.num_qubits
+        self.full_ansatz = self.generate_full_ansatz(hamiltonian.num_qubits)
 
         backend_sv = AerSimulator(method='statevector')
         backend_mps = AerSimulator(method='matrix_product_state')
@@ -52,6 +52,110 @@ class LCCVQE:
         self.optimal_params = None
         self.optimal_solution = None
     
+    @staticmethod
+    def generate_full_ansatz(num_qubits: int) -> QuantumCircuit:
+        qc = QuantumCircuit(num_qubits)
+        theta = ParameterVector('θ', 2 * num_qubits)
+        
+        for k in range(num_qubits):
+            qc.ry(theta[k], k)
+
+        for k in range(num_qubits):
+            qc.cz(k, (k + 1) % num_qubits)
+
+        for k in range(num_qubits):
+            qc.ry(theta[num_qubits + k], k)
+
+        return qc
+    
+    def generate_random_params(self, scale=TWO_PI):
+        return np.random.rand(2 * self.num_qubits) * scale
+    
+    def generate_pubs(
+        self, 
+        params: list[float] | np.ndarray,
+    ) -> list[tuple[QuantumCircuit, SparsePauliOp, np.ndarray]]:
+        return [(self.full_ansatz, self.hamiltonian, params)]
+    
+    def compute_energy(self, params: list[float] | np.ndarray) -> float:
+        """
+        Computes the sum of expectation of the ZZ terms.
+        """
+        pubs = self.generate_pubs(params)
+        results = self.estimator.run(pubs).result()
+        evs = [result.data.evs for result in results]
+        return sum(evs)
+    
+    def _sample_optimal_circuit(self) -> dict[str, int]:
+        """
+        Run the full circuit with sampler to get the solution. 
+        """
+        if self.optimal_params is None:
+            raise ValueError('Problem not yet solved. Run LCCVQE.solve() to solve the problem.')
+        
+        ansatz = self.full_ansatz.copy()
+        ansatz.measure_all()
+        result = self.sampler.run([(ansatz, self.optimal_params)], shots=self.shots).result()[0]
+        return result.data.meas.get_counts()
+
+    def _sample_most_likely(self) -> list[int]:
+        counts = self._sample_optimal_circuit()
+        highest_count = max(counts.values())
+
+        for bit_string, count in counts.items():
+            if count == highest_count:
+                return list(map(int, bit_string[::-1])) # flip the bit-string due to qiskit ordering
+            
+    def get_qp_solution(self) -> list[float]:
+        qubo_solution = self._sample_most_likely()
+        return self.converter.interpret(qubo_solution)
+
+    def solve(
+        self, 
+        initial_point: list[float] | np.ndarray = None,
+        run_sampler: bool = False,
+    ) -> OptimizerResult:
+        """
+        Calls the Scipy minimize function and returns the OptimizerResult object.
+        """
+        if initial_point is None:
+            initial_point = np.random.rand(2 * self.num_qubits) * 2 * np.pi
+        else:
+            assert np.asarray(initial_point).shape[0] == (2 * self.num_qubits), 'Parameter length does not match.'
+        
+        def obj_func(params):
+            return self.compute_energy(params)
+
+        result = self.optimizer.minimize(obj_func, initial_point)
+        self.optimal_params = result.x
+
+        if run_sampler:
+            self.optimal_solution = self.get_qp_solution()
+
+        return result
+
+    def solve_gurobi(self) -> float:
+        result = GurobiOptimizer().solve(self.qp)
+        return result.fval
+
+
+class LCCVQE(FullVQE):
+    def __init__(
+        self,
+        quadratic_program: QuadraticProgram,
+        shots: int = None,
+        sampler=None,
+        estimator=None,
+        optimizer=None,        
+    ) -> None:
+        super().__init__(
+            quadratic_program,
+            shots=shots,
+            sampler=sampler,
+            estimator=estimator,
+            optimizer=optimizer,
+        )
+
     @staticmethod
     def get_pauli_indices(pauli: Pauli) -> list[int]:
         return np.argwhere(pauli.z).reshape(-1).tolist()
@@ -74,26 +178,7 @@ class LCCVQE:
             qc.ry(theta[num_qubits + k], k)
 
         return qc
-    
-    @staticmethod
-    def full_twolocal_ansatz(num_qubits: int) -> QuantumCircuit:
-        qc = QuantumCircuit(num_qubits)
-        theta = ParameterVector('θ', 2 * num_qubits)
-        
-        for k in range(num_qubits):
-            qc.ry(theta[k], k)
 
-        for k in range(num_qubits):
-            qc.cz(k, (k + 1) % num_qubits)
-
-        for k in range(num_qubits):
-            qc.ry(theta[num_qubits + k], k)
-
-        return qc
-    
-    def generate_random_params(self, scale=TWO_PI):
-        return np.random.rand(2 * self.num_qubits) * scale
-    
     def _distance(self, i, j):
         return min(abs(i - j), abs(i + self.num_qubits - j), abs(j - i + self.num_qubits))
 
@@ -147,64 +232,3 @@ class LCCVQE:
             pubs.append((qc, local_ob, params[param_indices]))
             
         return pubs
-    
-    def compute_energy(self, params: list[float] | np.ndarray) -> float:
-        """
-        Computes the sum of expectation of the ZZ terms.
-        """
-        pubs = self.generate_pubs(params)
-        results = self.estimator.run(pubs).result()
-        evs = [result.data.evs for result in results]
-        return sum(evs)
-    
-    def _sample_optimal_circuit(self) -> dict[str, int]:
-        """
-        Run the full circuit with sampler to get the solution. 
-        """
-        if self.optimal_params is None:
-            raise ValueError('Problem not yet solved. Run LCCVQE.solve() to solve the problem.')
-        
-        ansatz = self.full_twolocal_ansatz(self.num_qubits)
-        ansatz.measure_all()
-        result = self.sampler.run([(ansatz, self.optimal_params)], shots=self.shots).result()[0]
-        return result.data.meas.get_counts()
-
-    def _sample_most_likely(self) -> list[int]:
-        counts = self._sample_optimal_circuit()
-        highest_count = max(counts.values())
-
-        for bit_string, count in counts.items():
-            if count == highest_count:
-                return list(map(int, bit_string[::-1])) # flip the bit-string due to qiskit ordering
-            
-    def get_qp_solution(self) -> list[float]:
-        qubo_solution = self._sample_most_likely()
-        return self.converter.interpret(qubo_solution)
-
-    def solve(
-        self, 
-        initial_point: list[float] | np.ndarray = None,
-        run_sampler: bool = False,
-    ) -> OptimizerResult:
-        """
-        Calls the Scipy minimize function and returns the OptimizerResult object.
-        """
-        if initial_point is None:
-            initial_point = np.random.rand(2 * self.num_qubits) * 2 * np.pi
-        else:
-            assert np.asarray(initial_point).shape[0] == (2 * self.num_qubits), 'Parameter length does not match.'
-        
-        def obj_func(params):
-            return self.compute_energy(params)
-
-        result = self.optimizer.minimize(obj_func, initial_point)
-        self.optimal_params = result.x
-
-        if run_sampler:
-            self.optimal_solution = self.get_qp_solution()
-
-        return result
-
-    def solve_gurobi(self) -> float:
-        result = GurobiOptimizer().solve(self.qp)
-        return result.fval
