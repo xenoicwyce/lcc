@@ -18,11 +18,7 @@ TWO_PI = 2 * np.pi
 
 
 class FullVQE:
-    """
-    LCC for VQE ansatz with circular entanglement.
-    * Only works for one-local (Z) or two-local (ZZ) operations.
-    * Currently only consider the TwoLocal ansatz with RY rotation, CZ entanglement, and reps=1.
-    """
+
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
@@ -140,6 +136,11 @@ class FullVQE:
 
 
 class LCCVQE(FullVQE):
+    """
+    LCC for VQE ansatz with circular entanglement.
+    * Only works for one-local (Z) or two-local (ZZ) operations.
+    * Currently only consider the TwoLocal ansatz with RY rotation, CZ entanglement, and reps=1.
+    """
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
