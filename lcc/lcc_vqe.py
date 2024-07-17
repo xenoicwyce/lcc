@@ -18,7 +18,6 @@ TWO_PI = 2 * np.pi
 
 
 class FullVQE:
-
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
