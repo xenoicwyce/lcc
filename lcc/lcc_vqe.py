@@ -21,6 +21,7 @@ class FullVQE:
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
+        reps: int = 1,
         shots: int = None,
         sampler=None,
         estimator=None,
@@ -35,7 +36,7 @@ class FullVQE:
         self.offset: float = offset
 
         self.num_qubits = hamiltonian.num_qubits
-        self.full_ansatz = self.generate_full_ansatz(hamiltonian.num_qubits)
+        self.full_ansatz = self.generate_full_ansatz(hamiltonian.num_qubits, reps)
 
         backend_sv = AerSimulator(method='statevector')
         backend_mps = AerSimulator(method='matrix_product_state')
@@ -48,23 +49,24 @@ class FullVQE:
         self.optimal_solution = None
     
     @staticmethod
-    def generate_full_ansatz(num_qubits: int) -> QuantumCircuit:
+    def generate_full_ansatz(num_qubits: int, reps: int) -> QuantumCircuit:
         qc = QuantumCircuit(num_qubits)
-        theta = ParameterVector('θ', 2 * num_qubits)
+        theta = ParameterVector('θ', (reps + 1) * num_qubits)
         
         for k in range(num_qubits):
             qc.ry(theta[k], k)
 
-        for k in range(num_qubits):
-            qc.cz(k, (k + 1) % num_qubits)
+        for r in range(1, reps + 1):
+            for k in range(num_qubits):
+                qc.cz(k, (k + 1) % num_qubits)
 
-        for k in range(num_qubits):
-            qc.ry(theta[num_qubits + k], k)
+            for k in range(num_qubits):
+                qc.ry(theta[r * num_qubits + k], k)
 
         return qc
     
     def generate_random_params(self, scale=TWO_PI):
-        return np.random.rand(2 * self.num_qubits) * scale
+        return np.random.rand(self.full_ansatz.num_parameters) * scale
     
     def generate_pubs(
         self, 
@@ -150,6 +152,7 @@ class LCCVQE(FullVQE):
     ) -> None:
         super().__init__(
             quadratic_program,
+            reps=1,
             shots=shots,
             sampler=sampler,
             estimator=estimator,
