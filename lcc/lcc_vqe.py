@@ -118,7 +118,7 @@ class FullVQE:
         if initial_point is None:
             initial_point = self.generate_random_params()
         else:
-            assert np.asarray(initial_point).shape[0] == (2 * self.num_qubits), 'Parameter length does not match.'
+            assert np.asarray(initial_point).shape[0] == self.full_ansatz.num_parameters, 'Parameter length does not match.'
         
         def obj_func(params):
             return self.compute_energy(params)
