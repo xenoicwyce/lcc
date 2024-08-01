@@ -116,7 +116,7 @@ class FullVQE:
         Calls the Scipy minimize function and returns the OptimizerResult object.
         """
         if initial_point is None:
-            initial_point = np.random.rand(2 * self.num_qubits) * 2 * np.pi
+            initial_point = self.generate_random_params()
         else:
             assert np.asarray(initial_point).shape[0] == (2 * self.num_qubits), 'Parameter length does not match.'
         
