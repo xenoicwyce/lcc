@@ -238,7 +238,7 @@ class QUBO:
 
         return graph
 
-    def linear_to_sqaure(self) -> None:
+    def linear_to_square(self) -> None:
         """
         Convert linear terms (c_i * x_i) to square terms (c_ii * x_i^2)
         """
