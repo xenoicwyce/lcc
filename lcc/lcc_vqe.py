@@ -173,8 +173,12 @@ class LCCVQE(FullVQE):
             qc.ry(theta[k], k)
 
         # Entangling CNOT
-        for k in range(num_qubits - 1):
-            qc.cz(k, k + 1)
+        if num_qubits == 6:
+            for j, k in [(0, 1), (1, 2), (3, 4), (4, 5)]:
+                qc.cz(j, k)
+        else:
+            for k in range(num_qubits - 1):
+                qc.cz(k, k + 1)
 
         # Second layer RY
         for k in range(num_qubits):
