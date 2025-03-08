@@ -210,7 +210,7 @@ class LCCVQE(FullVQE):
                 i, j = pauli_indices
                 if self._distance(i, j) == 1:
                     # 4-qubit
-                    print(i, j)
+
                     qc = self.generate_local_ansatz(4)
                     local_ob = SparsePauliOp('IZZI', observable.coeffs[0])
 
