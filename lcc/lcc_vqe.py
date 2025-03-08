@@ -25,14 +25,14 @@ class FullVQE:
         shots: int = None,
         sampler=None,
         estimator=None,
-        optimizer=None,        
+        optimizer=None,
     ) -> None:
         self.qp = quadratic_program
         self.converter = QuadraticProgramToQubo()
         self.qubo = self.converter.convert(self.qp)
 
         hamiltonian, offset = self.qubo.to_ising()
-        self.hamiltonian: SparsePauliOp = hamiltonian
+        self.hamiltonian: SparsePauliOp = hamiltonian.simplify()
         self.offset: float = offset
 
         self.num_qubits = hamiltonian.num_qubits
@@ -47,12 +47,12 @@ class FullVQE:
 
         self.optimal_params = None
         self.optimal_solution = None
-    
+
     @staticmethod
     def generate_full_ansatz(num_qubits: int, reps: int) -> QuantumCircuit:
         qc = QuantumCircuit(num_qubits)
         theta = ParameterVector('θ', (reps + 1) * num_qubits)
-        
+
         for k in range(num_qubits):
             qc.ry(theta[k], k)
 
@@ -64,16 +64,16 @@ class FullVQE:
                 qc.ry(theta[r * num_qubits + k], k)
 
         return qc
-    
+
     def generate_random_params(self, scale=TWO_PI):
         return np.random.rand(self.full_ansatz.num_parameters) * scale
-    
+
     def generate_pubs(
-        self, 
+        self,
         params: list[float] | np.ndarray,
     ) -> list[tuple[QuantumCircuit, SparsePauliOp, np.ndarray]]:
         return [(self.full_ansatz, self.hamiltonian, params)]
-    
+
     def compute_energy(self, params: list[float] | np.ndarray) -> float:
         """
         Computes the sum of expectation of the ZZ terms.
@@ -82,14 +82,14 @@ class FullVQE:
         results = self.estimator.run(pubs).result()
         evs = [result.data.evs for result in results]
         return sum(evs)
-    
+
     def _sample_optimal_circuit(self) -> dict[str, int]:
         """
-        Run the full circuit with sampler to get the solution. 
+        Run the full circuit with sampler to get the solution.
         """
         if self.optimal_params is None:
             raise ValueError('Problem not yet solved. Run LCCVQE.solve() to solve the problem.')
-        
+
         ansatz = self.full_ansatz.copy()
         ansatz.measure_all()
         result = self.sampler.run([(ansatz, self.optimal_params)], shots=self.shots).result()[0]
@@ -101,14 +101,14 @@ class FullVQE:
 
         for bit_string, count in counts.items():
             if count == highest_count:
-                return list(map(int, bit_string[::-1])) # flip the bit-string due to qiskit ordering
-            
+                return list(map(int, bit_string[::-1]))  # flip the bit-string due to qiskit ordering
+
     def get_qp_solution(self) -> list[float]:
         qubo_solution = self._sample_most_likely()
         return self.converter.interpret(qubo_solution)
 
     def solve(
-        self, 
+        self,
         initial_point: list[float] | np.ndarray = None,
         run_sampler: bool = False,
     ) -> OptimizerResult:
@@ -119,7 +119,7 @@ class FullVQE:
             initial_point = self.generate_random_params()
         else:
             assert np.asarray(initial_point).shape[0] == self.full_ansatz.num_parameters, 'Parameter length does not match.'
-        
+
         def obj_func(params):
             return self.compute_energy(params)
 
@@ -142,13 +142,14 @@ class LCCVQE(FullVQE):
     * Only works for one-local (Z) or two-local (ZZ) operations.
     * Currently only consider the TwoLocal ansatz with RY rotation, CZ entanglement, and reps=1.
     """
+
     def __init__(
         self,
         quadratic_program: QuadraticProgram,
         shots: int = None,
         sampler=None,
         estimator=None,
-        optimizer=None,        
+        optimizer=None,
     ) -> None:
         super().__init__(
             quadratic_program,
@@ -162,7 +163,7 @@ class LCCVQE(FullVQE):
     @staticmethod
     def get_pauli_indices(pauli: Pauli) -> list[int]:
         return np.argwhere(pauli.z).reshape(-1).tolist()
-    
+
     @staticmethod
     def generate_local_ansatz(num_qubits: int) -> QuantumCircuit:
         qc = QuantumCircuit(num_qubits)
@@ -190,7 +191,7 @@ class LCCVQE(FullVQE):
         return min(abs(i - j), abs(i + self.num_qubits - j), abs(j - i + self.num_qubits))
 
     def generate_pubs(
-        self, 
+        self,
         params: list[float] | np.ndarray,
     ) -> list[tuple[QuantumCircuit, SparsePauliOp, np.ndarray]]:
         pubs = []
@@ -209,9 +210,14 @@ class LCCVQE(FullVQE):
                 i, j = pauli_indices
                 if self._distance(i, j) == 1:
                     # 4-qubit
+                    print(i, j)
                     qc = self.generate_local_ansatz(4)
                     local_ob = SparsePauliOp('IZZI', observable.coeffs[0])
-                    first_layer = np.array([i - 1, i, j, j + 1]) % self.num_qubits
+
+                    if i == 0 and j == self.num_qubits - 1:
+                        first_layer = np.array([j - 1, j, i, i + 1]) % self.num_qubits
+                    else:
+                        first_layer = np.array([i - 1, i, j, j + 1]) % self.num_qubits
 
                 elif self._distance(i, j) == 2:
                     # 5-qubit
@@ -230,12 +236,12 @@ class LCCVQE(FullVQE):
                     first_layer = np.array([i - 1, i, i + 1, j - 1, j, j + 1]) % self.num_qubits
             else:
                 raise ValueError(f'Pauli indices must be of 1 or 2 length. Got {len(pauli_indices)} instead.')
-            
+
             second_layer = first_layer + self.num_qubits
             param_indices = np.hstack([first_layer, second_layer]).tolist()
 
             # construct pub
             params = np.asarray(params)
             pubs.append((qc, local_ob, params[param_indices]))
-            
+
         return pubs
