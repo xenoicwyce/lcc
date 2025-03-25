@@ -44,7 +44,7 @@ class LCCVQEgeneral:
     def get_pauli_indices(pauli: Pauli) -> list[int]:
         return np.argwhere(pauli.z).reshape(-1).tolist()
 
-    def create_lcc_pubs(self) -> list[tuple[QuantumCircuit, float]]:
+    def create_lcc_pubs(self) -> list[tuple[QuantumCircuit, np.ndarray]]:
 
         lcc_pubs = []
         for obs in self.hamiltonian:
@@ -78,10 +78,10 @@ class LCCVQEgeneral:
                 index = self.params_indices_dict[param]
                 lcc_points_dict[param] = points[index]
 
-            lcc_qc.assign_parameters(lcc_points_dict, inplace=True)
+            qc = lcc_qc.assign_parameters(lcc_points_dict, inplace=False)
 
             if isinstance(self.simulator, StatevectorSimulator):
-                job = self.simulator.run(lcc_qc)
+                job = self.simulator.run(qc)
                 result = job.result()
                 state = result.get_statevector().data
 
