@@ -8,4 +8,4 @@ The $G(n,p)$ graphs are generated using `fast_gnp_random_graph()`, and the regul
 The instances in the `dataset` folder are named according to their graph parameters. 
 For example, `n100_reg3_seed0` represents a regular graph with 100 nodes, degree 3, and seed 0, while `n100_gnp01_seed0` denotes a $G(n, p)$ graph with 100 nodes, edge probability 0.1, and seed 0.
 
-To see how to use LCC to solve Max-cut and other problems, see `lcc_vqe_tutorial.ipynb`.
+To see how to use LCC to solve Max-cut and other problems, see [lcc_vqe_tutorial.ipynb](lcc_vqe_tutorial.ipynb).
